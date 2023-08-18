@@ -1,0 +1,67 @@
+{
+  "name": "vue-tree-dnd",
+  "author": "James Cuénod",
+  "description": "Vue3 Tree View with Draggable Items",
+  "license": "MIT",
+  "keywords": [
+    "tree",
+    "sortable",
+    "nested",
+    "draggable"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jcuenod/vue-tree-dnd"
+  },
+  "private": false,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && vue-tsc --build --emitDeclarationOnly --declaration",
+    "preview": "vite preview"
+  },
+  "main": "./dist/vue-tree-dnd.umd.cjs",
+  "module": "./dist/vue-tree-dnd.js",
+  "types": "./lib/env.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "default": "./dist/vue-tree-dnd.js",
+        "types": "./dist/types/env.d.ts"
+      },
+      "require": {
+        "default": "./dist/vue-tree-dnd.umd.cjs",
+        "types": "./dist/types/env.d.ts"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "lib/**/*.d.ts"
+  ],
+  "peerDependencies": {
+    "vue": "^3.3.4"
+  },
+  "devDependencies": {
+    "@babel/types": "^7.22.10",
+    "@types/node": "^20.5.1",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "@vue/tsconfig": "^0.4.0",
+    "eslint": "^8.47.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-config-standard-with-typescript": "^37.0.0",
+    "eslint-plugin-import": "^2.28.0",
+    "eslint-plugin-n": "^16.0.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-vue": "^9.17.0",
+    "path": "^0.12.7",
+    "prettier": "^3.0.2",
+    "rollup-plugin-typescript2": "^0.35.0",
+    "typescript": "^5.1.6",
+    "vite": "^4.4.5",
+    "vue-tsc": "^1.8.5"
+  }
+}
