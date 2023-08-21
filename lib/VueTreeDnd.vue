@@ -177,8 +177,11 @@ provide<DragOverEventHandler>('dragover', dragover)
         :component="component"
         :ancestors="[]"
         :depth="0"
+        :drop-target="dropTarget"
         :delta-x="deltaX"
         :is-ghost="false"
+        draggable="true"
+        @dragstart.stop="dragstart($event, node.id)"
       />
     </template>
   </div>
