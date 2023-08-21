@@ -27,13 +27,13 @@
   "types": "./lib/env.d.ts",
   "exports": {
     ".": {
-      "import": {
-        "default": "./dist/vue-tree-dnd.js",
-        "types": "./dist/types/env.d.ts"
-      },
       "require": {
-        "default": "./dist/vue-tree-dnd.umd.cjs",
-        "types": "./dist/types/env.d.ts"
+        "types": "./dist/types/env.d.ts",
+        "default": "./dist/vue-tree-dnd.umd.cjs"
+      },
+      "import": {
+        "types": "./dist/types/env.d.ts",
+        "default": "./dist/vue-tree-dnd.js"
       }
     }
   },
