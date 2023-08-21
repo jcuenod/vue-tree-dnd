@@ -3,7 +3,7 @@
   <h1 align="center">Vue-Tree-Dnd</h3>
 
   <p align="center">
-    Draggable tree structure for Vue3 with no dependencies
+    Sortable drag-n-drop tree structure for Vue3 with no dependencies
     <br />
     <!-- <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
     <br />
@@ -159,7 +159,7 @@ type MoveMutation = {
 | expanded | `boolean` | Whether the node is expanded (or collapsed). It is `ItemRenderer`'s responsibility to manage expand/collapse. |
 | setExpanded | `(value: boolean) => void` | Callback to control whether the node is collapsed or expanded. To toggle, call `setExpanded(!expanded)`. |
 
-Note that your `ItemRenderer` may perform any other actions you wish. For example, you may want to add a button to delete the node. You can do this by adding a `delete` method to your `ItemRenderer` component and using `provide`/`inject` from the component that imports `vue-tree-dnd`.
+Your `ItemRenderer` will be draggable but may perform any other actions you wish. For example, you may want to add a button to delete the node. You can do this by adding a `delete` method to your `ItemRenderer` component and using `provide`/`inject` from the component that imports `vue-tree-dnd`.
 
 For example:
 

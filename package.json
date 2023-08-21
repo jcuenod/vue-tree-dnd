@@ -1,9 +1,10 @@
 {
   "name": "vue-tree-dnd",
   "author": "James Cuénod",
-  "description": "Vue3 Tree View with Draggable Items",
+  "description": "Sortable drag-n-drop tree structure for Vue3 with no dependencies",
   "license": "MIT",
   "keywords": [
+    "vue",
     "tree",
     "sortable",
     "nested",
