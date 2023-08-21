@@ -70,7 +70,7 @@ const possibleMoveMutations = computed<MoveMutationProposal[]>(() => {
   // If we have expanded children, node must be first child (no other options)
   // If we are a leaf/collapsed, node can be sibling or child (must be last if collapsed)
   // If we are the last child, node can also move up to ancestors
-  if (props.item.children.length > 0 && expanded.value) {
+  if (props.item.children.filter(node => node.id !== dragItemId).length > 0 && expanded.value) {
     return [{ id: dragItemId, targetId: props.item.id, position: 'FIRST_CHILD', offsetIndent: 1 }]
   }
   const a = props.ancestors.length
@@ -121,12 +121,12 @@ const isBeingDraggedStyle = computed(() => dragItem?.value?.id === props.item.id
     <!-- Display actual node -->
     <div
       style="display: flex; flex-direction: row; align-items: center;"
-      :style="{paddingLeft: `${2 * (depth)}rem`}"
       @dragover="dragover($event, item.id)"
     >
       <component
         :is="component"
         :item="item"
+        :depth="depth"
         :expanded="expanded"
         @set-expanded="setExpanded"
       />
@@ -160,8 +160,8 @@ const isBeingDraggedStyle = computed(() => dragItem?.value?.id === props.item.id
       :drop-target="dropTarget"
       :depth="depth + 1"
       :delta-x="deltaX"
-      draggable="true"
       :is-ghost="isGhost"
+      draggable="true"
       @dragstart.stop="dragstart($event, node.id)"
     />
   </div>
