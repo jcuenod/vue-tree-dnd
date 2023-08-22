@@ -15,7 +15,7 @@
     "url": "https://github.com/jcuenod/vue-tree-dnd"
   },
   "private": false,
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "scripts": {
     "dev": "vite",
