@@ -44,8 +44,8 @@ const getPreviousNodeId: (nodeId: TreeItemId) => TreeItemId = (nodeId: TreeItemI
 }
 
 const expansions = ref<ExpandedNodes>({})
-watch(() => props.tree, () => {
-  expansions.value = Object.fromEntries(flatTreeIds.value.map((id: TreeItemId) => [id, true]))
+watch(() => flatTreeIds, () => {
+  expansions.value = Object.fromEntries(flatTreeIds.value.map((id: TreeItemId) => [id, expansions.value?.[id] ?? true]))
 }, { immediate: true })
 provide('expansions', expansions)
 
