@@ -127,6 +127,11 @@ const dragend: DragEndEventHandler = () => {
   dragItemId.value = null
 
   const { ghostIndent, ...proposal } = dropProposal.value
+
+  if (proposal.id === proposal.targetId) {
+    // No-op
+    return
+  }
   emit('move', proposal)
 }
 
