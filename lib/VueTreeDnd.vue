@@ -55,7 +55,7 @@ const isSomeParentCollapsed: (targetId: TreeItemId) => boolean = (targetId: Tree
   if (targetNode === undefined) {
     throw new Error(`targetId ${targetId} not found in flatTreeNodes`)
   }
-  
+
   const parentIds = targetNode.__vue_dnd_tree_ancestors
   return parentIds.some((parentId: TreeItemId) => !expansions.value?.[parentId])
 }
