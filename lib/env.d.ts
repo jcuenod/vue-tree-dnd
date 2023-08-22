@@ -17,7 +17,7 @@ type ExpandedNodes = {
   [key in ItemId]: boolean
 }
 
-type DragStartEventHandler = (event: DragEvent, itemId: ItemId) => void
+type DragStartEventHandler = (event: DragEvent, itemId: ItemId, depth: number) => void
 type DragOverEventHandler = (event: DragEvent, itemId: ItemId) => void
 type DragEndEventHandler = (event: DragEvent) => void
 
@@ -25,7 +25,7 @@ interface MoveMutationProposal {
   id: ItemId
   targetId: ItemId
   position: Position
-  offsetIndent: number
+  ghostIndent: number
 }
 type DropProposalSetterHandler = (proposal: MoveMutationProposal) => void
 

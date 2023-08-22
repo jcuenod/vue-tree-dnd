@@ -47,11 +47,11 @@ const setExpanded: (expanded: boolean) => void = (expanded: boolean) => {
 const dropTarget = inject<ComputedRef<TreeItemId>>('dropTarget')
 const dragItem = inject<ComputedRef<TreeItem | undefined>>('dragItem')
 const injectedDragstart = inject<DragStartEventHandler>('dragstart')
-const dragstart: DragStartEventHandler = (event: DragEvent, id: TreeItemId) => {
+const dragstart: DragStartEventHandler = (event: DragEvent, id: TreeItemId, depth: number) => {
   if (injectedDragstart === undefined) {
     throw new Error('VueTreeDnd has not been provided')
   }
-  injectedDragstart(event, id)
+  injectedDragstart(event, id, depth)
 }
 const injectedDragover = inject<DragOverEventHandler>('dragover')
 const dragover: DragOverEventHandler = (event: DragEvent, id: TreeItemId) => {
@@ -71,19 +71,18 @@ const possibleMoveMutations = computed<MoveMutationProposal[]>(() => {
   // If we are a leaf/collapsed, node can be sibling or child (must be last if collapsed)
   // If we are the last child, node can also move up to ancestors
   if (props.item.children.filter(node => node.id !== dragItemId).length > 0 && expanded.value) {
-    return [{ id: dragItemId, targetId: props.item.id, position: 'FIRST_CHILD', offsetIndent: 1 }]
+    return [{ id: dragItemId, targetId: props.item.id, position: 'FIRST_CHILD', ghostIndent: props.depth + 1 }]
   }
-  const a = props.ancestors.length
   return [
-    ...props.ancestors.map<MoveMutationProposal>((targetId, index) => ({ id: dragItemId, targetId, position: 'RIGHT', offsetIndent: -(a - index) })),
-    { id: dragItemId, targetId: props.item.id, position: 'RIGHT', offsetIndent: 0 },
-    { id: dragItemId, targetId: props.item.id, position: 'LAST_CHILD', offsetIndent: 1 }
+    ...props.ancestors.map<MoveMutationProposal>((targetId, index) => ({ id: dragItemId, targetId, position: 'RIGHT', ghostIndent: index })),
+    { id: dragItemId, targetId: props.item.id, position: 'RIGHT', ghostIndent: props.depth },
+    { id: dragItemId, targetId: props.item.id, position: 'LAST_CHILD', ghostIndent: props.depth + 1 }
   ]
 })
-const offsetIndent = computed(() => {
-  const minOffset = Math.min(...possibleMoveMutations.value.map(m => m.offsetIndent))
-  const maxOffset = Math.max(...possibleMoveMutations.value.map(m => m.offsetIndent))
-  return clamp(Math.round(props.deltaX / 20), minOffset, maxOffset)
+const ghostIndent = computed(() => {
+  const minOffset = Math.min(...possibleMoveMutations.value.map(m => m.ghostIndent))
+  const maxOffset = Math.max(...possibleMoveMutations.value.map(m => m.ghostIndent))
+  return clamp(props.deltaX, minOffset, maxOffset)
 })
 
 const injectedSetDropProposal = inject<DropProposalSetterHandler>('setDropProposal')
@@ -93,14 +92,14 @@ const setDropProposal: DropProposalSetterHandler = (proposal: MoveMutationPropos
   }
   injectedSetDropProposal(proposal)
 }
-watch([dropTarget, possibleMoveMutations, offsetIndent], () => {
+watch([dropTarget, possibleMoveMutations, ghostIndent], () => {
   if (dropTarget === undefined || dropTarget?.value === null) {
     return
   }
   if (dropTarget.value === props.item.id) {
-    const impliedMoveMutation = possibleMoveMutations.value.find(m => m.offsetIndent === offsetIndent.value)
+    const impliedMoveMutation = possibleMoveMutations.value.find(m => m.ghostIndent === ghostIndent.value)
     if (impliedMoveMutation == null) {
-      throw new Error(`Could not find impliedMoveMutation for offsetIndent ${offsetIndent.value}`)
+      throw new Error(`Could not find impliedMoveMutation for ghostIndent ${ghostIndent.value}`)
     }
     setDropProposal(impliedMoveMutation)
   }
@@ -142,7 +141,7 @@ const isBeingDraggedStyle = computed(() => dragItem?.value?.id === props.item.id
         :component="component"
         :ancestors="[]"
         :drop-target="dropTarget"
-        :depth="depth + offsetIndent"
+        :depth="ghostIndent"
         :delta-x="deltaX"
         :is-ghost="true"
       />
@@ -162,7 +161,7 @@ const isBeingDraggedStyle = computed(() => dragItem?.value?.id === props.item.id
       :delta-x="deltaX"
       :is-ghost="isGhost"
       draggable="true"
-      @dragstart.stop="dragstart($event, node.id)"
+      @dragstart.stop="dragstart($event, node.id, depth + 1)"
     />
   </div>
 </template>

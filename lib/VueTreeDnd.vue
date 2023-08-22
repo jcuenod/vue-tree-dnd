@@ -68,7 +68,9 @@ const dragOverMouseHandler: (event: DragEvent) => void = (event: DragEvent) => {
     throw new Error('VueTreeDnd has not correctly set mouseX')
   }
   const originX = parseInt(event.dataTransfer?.getData('mouseX'))
-  deltaX.value = +event.clientX - originX
+  const initialDepth = parseInt(event.dataTransfer?.getData('initialDepth'))
+  const xd = Math.round((+event.clientX - originX) / 20)
+  deltaX.value = initialDepth + xd
 }
 onMounted(() => { document.addEventListener('dragover', dragOverMouseHandler) })
 onUnmounted(() => { document.removeEventListener('dragover', dragOverMouseHandler) })
@@ -110,7 +112,7 @@ watch(dropTarget, () => {
       id: dragItemId.value,
       targetId: props.tree[0].id,
       position: 'LEFT',
-      offsetIndent: 0
+      ghostIndent: 0
     })
   }
 })
@@ -124,12 +126,13 @@ const dragend: DragEndEventHandler = () => {
   dropTarget.value = null
   dragItemId.value = null
 
-  const { offsetIndent, ...proposal } = dropProposal.value
+  const { ghostIndent, ...proposal } = dropProposal.value
   emit('move', proposal)
 }
 
-const dragstart: DragStartEventHandler = (event: DragEvent, itemId: TreeItemId) => {
+const dragstart: DragStartEventHandler = (event: DragEvent, itemId: TreeItemId, depth: number) => {
   event.dataTransfer?.setData('mouseX', event.clientX.toString())
+  event.dataTransfer?.setData('initialDepth', depth.toString())
   dragItemId.value = itemId
   setDropTarget(getPreviousNodeId(itemId))
 }
@@ -181,7 +184,7 @@ provide<DragOverEventHandler>('dragover', dragover)
         :delta-x="deltaX"
         :is-ghost="false"
         draggable="true"
-        @dragstart.stop="dragstart($event, node.id)"
+        @dragstart.stop="dragstart($event, node.id, 0)"
       />
     </template>
   </div>
