@@ -17,7 +17,6 @@ import type {
   FlatTreeItem,
   MoveMutation,
   MoveMutationProposal,
-  TreeItem,
   TreeItemId,
   VueTreeDndProps
 } from './env'
@@ -30,25 +29,22 @@ const emit = defineEmits<{
   'move': [move: MoveMutation]
 }>()
 
-const flatTreeNodes = computed(() =>
-  Array.isArray(props.tree) && props.tree.length > 0
-    ? getFlatTreeWithAncestors(props.tree)
-    : []
-)
-const flatTreeIds = computed<TreeItemId[]>(() => flatTreeNodes.value.map((node: TreeItem) => node.id))
+const flatTreeNodes = ref<FlatTreeItem[]>([])
+const flatTreeIds = ref<TreeItemId[]>([])
+const expansions = ref<ExpandedNodes>({})
+watch(() => props.tree, () => {
+  flatTreeNodes.value = getFlatTreeWithAncestors(props.tree)
+  flatTreeIds.value = flatTreeNodes.value.map((node: FlatTreeItem) => node.id)
+  expansions.value = Object.fromEntries(flatTreeIds.value.map((id: TreeItemId) => [id, expansions.value?.[id] ?? true]))
+}, { immediate: true })
+provide('expansions', expansions)
+
 const getPreviousNodeId: (nodeId: TreeItemId) => TreeItemId = (nodeId: TreeItemId) => {
   const index = flatTreeIds.value.findIndex(id => id === nodeId)
   return index === 0
     ? LEFT_OF_ROOT_ID
     : flatTreeIds.value[index - 1]
 }
-
-const expansions = ref<ExpandedNodes>({})
-// TODO: Fix the reactivity issues going on here (this doesn't seem to respond as expected)
-watch(() => flatTreeIds, () => {
-  expansions.value = Object.fromEntries(flatTreeIds.value.map((id: TreeItemId) => [id, expansions.value?.[id] ?? true]))
-}, { immediate: true })
-provide('expansions', expansions)
 
 const isSomeParentCollapsed: (targetId: TreeItemId) => boolean = (targetId: TreeItemId) => {
   if (targetId === LEFT_OF_ROOT_ID) {
@@ -59,8 +55,8 @@ const isSomeParentCollapsed: (targetId: TreeItemId) => boolean = (targetId: Tree
   if (targetNode === undefined) {
     throw new Error(`targetId ${targetId} not found in flatTreeNodes`)
   }
-  // Filter out any parentIds that do not have a valid expansion state (i.e. a boolean)
-  const parentIds = targetNode.__vue_dnd_tree_ancestors.filter((parentId: TreeItemId) => typeof expansions.value?.[parentId] === 'boolean')
+  
+  const parentIds = targetNode.__vue_dnd_tree_ancestors
   return parentIds.some((parentId: TreeItemId) => !expansions.value?.[parentId])
 }
 
