@@ -73,8 +73,11 @@ const possibleMoveMutations = computed<MoveMutationProposal[]>(() => {
   if (props.item.children.filter(node => node.id !== dragItemId).length > 0 && expanded.value) {
     return [{ id: dragItemId, targetId: props.item.id, position: 'FIRST_CHILD', ghostIndent: props.depth + 1 }]
   }
+  const getOffsetIndent: (index: number) => number = (index: number) => props.depth - (props.ancestors.length - index)
   return [
-    ...props.ancestors.map<MoveMutationProposal>((targetId, index) => ({ id: dragItemId, targetId, position: 'RIGHT', ghostIndent: index })),
+    ...props.ancestors.map<MoveMutationProposal>((targetId, index) => ({
+      id: dragItemId, targetId, position: 'RIGHT', ghostIndent: getOffsetIndent(index)
+    })),
     { id: dragItemId, targetId: props.item.id, position: 'RIGHT', ghostIndent: props.depth },
     { id: dragItemId, targetId: props.item.id, position: 'LAST_CHILD', ghostIndent: props.depth + 1 }
   ]
