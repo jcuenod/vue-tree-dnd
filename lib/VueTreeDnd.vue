@@ -63,7 +63,7 @@ const isSomeParentCollapsed: (targetId: TreeItemId) => boolean = (targetId: Tree
 }
 
 const deltaX = ref(0)
-const dragOverMouseHandler: (event: DragEvent) => void = (event: DragEvent) => {
+const dragOverDeltaXCalculator: (event: DragEvent) => void = (event: DragEvent) => {
   if ((event.dataTransfer?.getData('mouseX')) == null) {
     throw new Error('VueTreeDnd has not correctly set mouseX')
   }
@@ -72,8 +72,8 @@ const dragOverMouseHandler: (event: DragEvent) => void = (event: DragEvent) => {
   const xd = Math.round((+event.clientX - originX) / 20)
   deltaX.value = initialDepth + xd
 }
-onMounted(() => { document.addEventListener('dragover', dragOverMouseHandler) })
-onUnmounted(() => { document.removeEventListener('dragover', dragOverMouseHandler) })
+onMounted(() => { document.addEventListener('dragover', dragOverDeltaXCalculator) })
+onUnmounted(() => { document.removeEventListener('dragover', dragOverDeltaXCalculator) })
 
 const dragItemId = ref<TreeItemId | null>(null)
 const dragItem = computed(() => flatTreeNodes.value.find((node: FlatTreeItem) => node.id === dragItemId.value))
