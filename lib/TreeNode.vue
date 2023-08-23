@@ -34,7 +34,7 @@ if (props.component === undefined) {
 
 const expansions = inject<Ref<ExpandedNodes>>('expansions')
 if (expansions === undefined) {
-  throw new Error('VueTreeDnd has not been provided')
+  throw new Error('VueTreeDnd has not provided `expansions` (This is probably a VueTreeDnd bug!)')
 }
 const expanded = computed(() => expansions.value?.[props.item?.id] ?? true)
 const setExpanded: (expanded: boolean) => void = (expanded: boolean) => {
