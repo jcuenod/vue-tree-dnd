@@ -62,12 +62,12 @@ const isSomeParentCollapsed: (targetId: TreeItemId) => boolean = (targetId: Tree
 
 const deltaX = ref(0)
 const dragOverDeltaXCalculator: (event: DragEvent) => void = (event: DragEvent) => {
-  if ((event.dataTransfer?.getData('mouseX')) == null) {
-    throw new Error('VueTreeDnd has not correctly set mouseX')
+  if (dragdata.value === null) {
+    throw new Error('VueTreeDnd has not correctly set dataTransfer data (missing)')
   }
-  const originX = parseInt(event.dataTransfer?.getData('mouseX'))
-  const initialDepth = parseInt(event.dataTransfer?.getData('initialDepth'))
-  const xd = Math.round((+event.clientX - originX) / 20)
+
+  const { initialX, initialDepth } = dragdata.value
+  const xd = Math.round((+event.clientX - initialX) / 20)
   deltaX.value = initialDepth + xd
 }
 onMounted(() => { document.addEventListener('dragover', dragOverDeltaXCalculator) })
@@ -133,11 +133,23 @@ const dragend: DragEndEventHandler = () => {
   emit('move', proposal)
 }
 
+const dragImage = new Image()
+type DragEventData = {
+  initialX: number
+  initialDepth: number
+} | null
+const dragdata = ref<DragEventData>(null)
 const dragstart: DragStartEventHandler = (event: DragEvent, itemId: TreeItemId, depth: number) => {
-  event.dataTransfer?.setData('mouseX', event.clientX.toString())
-  event.dataTransfer?.setData('initialDepth', depth.toString())
-  dragItemId.value = itemId
-  setDropTarget(getPreviousNodeId(itemId))
+  event.dataTransfer?.setDragImage(dragImage, 0, 0)
+  // Putting this in a timeout is necessary for Chrome.
+  setTimeout(() => {
+    dragItemId.value = itemId
+    dragdata.value = {
+      initialX: event.clientX,
+      initialDepth: depth
+    }
+    setDropTarget(getPreviousNodeId(itemId))
+  }, 0)
 }
 provide<DragStartEventHandler>('dragstart', dragstart)
 
