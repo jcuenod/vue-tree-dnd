@@ -28,6 +28,8 @@
     <a href="https://github.com/jcuenod/vue-tree-dnd/issues">Report Bug</a>
     ·
     <a href="https://github.com/jcuenod/vue-tree-dnd/issues">Request Feature</a>
+    ·
+    <a href="https://jcuenod.github.io/vue-tree-dnd-examples/">Live Demo</a>
   </p>
 </div>
 
@@ -67,8 +69,6 @@ There are plenty of drag-n-drop libraries for Vue. None of them (that I found) s
 * Limit draggable options to what is possible
 * Clearly indicate where items will be dropped
 * Support collapsing nodes
-
-See a [demo of vue-tree-dnd](https://jcuenod.github.io/vue-tree-dnd-examples/) in action.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
