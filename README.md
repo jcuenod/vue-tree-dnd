@@ -1,3 +1,18 @@
+<!-- PROJECT SHIELDS -->
+<!--
+*** I'm using markdown "reference style" links for readability.
+*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
+*** See the bottom of this document for the declaration of the reference variables
+*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
+*** https://www.markdownguide.org/basic-syntax/#reference-style-links
+-->
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
+<!-- [![LinkedIn][linkedin-shield]][linkedin-url] -->
+
 <a name="readme-top"></a>
 <div align="center">
   <h1 align="center">Vue-Tree-Dnd</h3>
@@ -5,10 +20,10 @@
   <p align="center">
     Sortable drag-n-drop tree structure for Vue3 with no dependencies
     <br />
-    <!-- <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
+    <!-- <a href="https://github.com/jcuenod/vue-tree-dnd"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
+    <a href="https://github.com/jcuenod/vue-tree-dnd">View Demo</a>
     · -->
     <a href="https://github.com/jcuenod/vue-tree-dnd/issues">Report Bug</a>
     ·
@@ -44,7 +59,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-<!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
+[![Product Name Screen Shot][product-screenshot]](https://jcuenod.github.io/vue-tree-dnd-examples/)
 
 There are plenty of drag-n-drop libraries for Vue. None of them (that I found) support a file/folder-like structure that can create new levels of nesting. I created this library with this spec in mind:
 
@@ -52,6 +67,8 @@ There are plenty of drag-n-drop libraries for Vue. None of them (that I found) s
 * Limit draggable options to what is possible
 * Clearly indicate where items will be dropped
 * Support collapsing nodes
+
+See a [demo of vue-tree-dnd](https://jcuenod.github.io/vue-tree-dnd-examples/) in action.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -200,7 +217,7 @@ const delete = () => {
     - [ ] Chinese
     - [ ] Spanish
 
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/jcuenod/vue-tree-dnd/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p> -->
 
@@ -227,7 +244,7 @@ Don't forget to give the project a star! Thanks again!
 <!-- LICENSE -->
 ## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+Distributed under the MIT License. See `LICENSE.md` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -235,19 +252,17 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
-[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=for-the-badge
-[forks-url]: https://github.com/othneildrew/Best-README-Template/network/members
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
-[stars-url]: https://github.com/othneildrew/Best-README-Template/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge
-[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
-[license-url]: https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/othneildrew
-[product-screenshot]: images/screenshot.png
+[contributors-shield]: https://img.shields.io/github/contributors/jcuenod/vue-tree-dnd.svg?style=for-the-badge
+[contributors-url]: https://github.com/jcuenod/vue-tree-dnd/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/jcuenod/vue-tree-dnd.svg?style=for-the-badge
+[forks-url]: https://github.com/jcuenod/vue-tree-dnd/network/members
+[stars-shield]: https://img.shields.io/github/stars/jcuenod/vue-tree-dnd.svg?style=for-the-badge
+[stars-url]: https://github.com/jcuenod/vue-tree-dnd/stargazers
+[issues-shield]: https://img.shields.io/github/issues/jcuenod/vue-tree-dnd.svg?style=for-the-badge
+[issues-url]: https://github.com/jcuenod/vue-tree-dnd/issues
+[license-shield]: https://img.shields.io/github/license/jcuenod/vue-tree-dnd.svg?style=for-the-badge
+[license-url]: https://github.com/jcuenod/vue-tree-dnd/blob/master/LICENSE.txt
+[product-screenshot]: ./vue-tree-dnd-demo.gif
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Next-url]: https://nextjs.org/
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
