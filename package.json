@@ -8,7 +8,15 @@
     "tree",
     "sortable",
     "nested",
-    "draggable"
+    "draggable",
+    "dnd",
+    "drag-n-drop",
+    "drag-and-drop",
+    "drag",
+    "drop",
+    "tree-view",
+    "tree-structure",
+    "treeview",
   ],
   "repository": {
     "type": "git",
