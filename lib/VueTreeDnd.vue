@@ -62,6 +62,7 @@ const isSomeParentCollapsed: (targetId: TreeItemId) => boolean = (targetId: Tree
 
 const deltaX = ref(0)
 const dragOverDeltaXCalculator: (event: DragEvent) => void = (event: DragEvent) => {
+  event.preventDefault()
   if (dragdata.value === null) {
     throw new Error('VueTreeDnd has not correctly set dataTransfer data (missing)')
   }
@@ -140,7 +141,11 @@ type DragEventData = {
 } | null
 const dragdata = ref<DragEventData>(null)
 const dragstart: DragStartEventHandler = (event: DragEvent, itemId: TreeItemId, depth: number) => {
-  event.dataTransfer?.setDragImage(dragImage, 0, 0)
+  if (event.dataTransfer !== null) {
+    event.dataTransfer.dropEffect = 'none'
+    event.dataTransfer.effectAllowed = 'none'
+    event.dataTransfer.setDragImage(dragImage, 0, 0)
+  }
   // Putting this in a timeout is necessary for Chrome.
   setTimeout(() => {
     dragItemId.value = itemId
@@ -154,6 +159,7 @@ const dragstart: DragStartEventHandler = (event: DragEvent, itemId: TreeItemId, 
 provide<DragStartEventHandler>('dragstart', dragstart)
 
 const dragover: DragOverEventHandler = (event: DragEvent, itemId: TreeItemId) => {
+  event.preventDefault()
   const previousNodeId = getPreviousNodeId(itemId)
   if (dragItemId.value === itemId) {
     setDropTarget(previousNodeId); return
