@@ -111,7 +111,7 @@ watch([dropTarget, possibleMoveMutations, ghostIndent], () => {
 const dragStyle = {
   position: 'absolute',
   opacity: 0,
-  left: '-2000vw'
+  pointerEvents: 'none'
 }
 const isBeingDraggedStyle = computed(() => dragItem?.value?.id === props.item.id && !props.isGhost ? dragStyle : {})
 </script>
