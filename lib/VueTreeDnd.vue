@@ -190,6 +190,7 @@ provide<DragOverEventHandler>('dragover', dragover)
         :depth="0"
         :delta-x="deltaX"
         :is-ghost="true"
+        :locked="locked"
       />
     </div>
     <template
@@ -204,7 +205,8 @@ provide<DragOverEventHandler>('dragover', dragover)
         :drop-target="dropTarget"
         :delta-x="deltaX"
         :is-ghost="false"
-        draggable="true"
+        :locked="locked"
+        :draggable="!locked"
         @dragstart.stop="dragstart($event, node.id, 0)"
       />
     </template>

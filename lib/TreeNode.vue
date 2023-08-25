@@ -149,6 +149,7 @@ const isBeingDraggedStyle = computed(() => dragItem?.value?.id === props.item.id
         :depth="ghostIndent"
         :delta-x="deltaX"
         :is-ghost="true"
+        :locked="locked"
       />
     </div>
 
@@ -165,7 +166,8 @@ const isBeingDraggedStyle = computed(() => dragItem?.value?.id === props.item.id
       :depth="depth + 1"
       :delta-x="deltaX"
       :is-ghost="isGhost"
-      draggable="true"
+      :locked="locked"
+      :draggable="!locked"
       @dragstart.stop="dragstart($event, node.id, depth + 1)"
     />
   </a>

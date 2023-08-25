@@ -42,10 +42,12 @@ export interface TreeItemProps {
   depth: number
   deltaX: number
   isGhost: boolean
+  locked: boolean
 }
 export interface VueTreeDndProps {
   tree: TreeItem[]
   component: Component
+  locked: boolean
 }
 
 export interface VueTreeDndEmits {
