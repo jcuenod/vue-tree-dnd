@@ -118,7 +118,7 @@ const isBeingDraggedStyle = computed(() => dragItem?.value?.id === props.item.id
 
 <template>
   <a
-    href="#"
+    href="javascript:;"
     style="color: inherit; text-decoration: none"
     :style="isBeingDraggedStyle"
   >
