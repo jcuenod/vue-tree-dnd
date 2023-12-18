@@ -142,11 +142,14 @@ Your `tree` data should conform to the following type:
 ```ts
 type TreeItem = {
     id: number | string
+    expanded?: boolean
     children: TreeItem[]
 }
 ```
 
 Apart from these properties, you may include any other additional data. This will be passed into the `ItemRenderer` component.
+
+**Note**: The expanded property is optional and will default to `true`. It is also not two-way bound; changes will be reflected in the dnd tree, but changes in the dnd tree will not be pushed back.
 
 #### Move Mutation
 

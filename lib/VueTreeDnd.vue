@@ -32,10 +32,26 @@ const emit = defineEmits<{
 const flatTreeNodes = ref<FlatTreeItem[]>([])
 const flatTreeIds = ref<TreeItemId[]>([])
 const expansions = ref<ExpandedNodes>({})
+const getDefaultExpanded: (id: TreeItemId) => boolean = (id: TreeItemId) => {
+  const node = flatTreeNodes.value.find(
+    (node: FlatTreeItem) => node.id === id
+  )
+  if (node !== undefined && 'expanded' in node && typeof node.expanded === 'boolean') {
+    return node.expanded
+  }
+  if (expansions.value?.[id]) {
+    return expansions.value[id]
+  }
+  return true
+}
 watch(() => props.tree, () => {
   flatTreeNodes.value = getFlatTreeWithAncestors(props.tree)
-  flatTreeIds.value = flatTreeNodes.value.map((node: FlatTreeItem) => node.id)
-  expansions.value = Object.fromEntries(flatTreeIds.value.map((id: TreeItemId) => [id, expansions.value?.[id] ?? true]))
+  flatTreeIds.value = flatTreeNodes.value.map(({ id }) => id)
+  expansions.value = Object.fromEntries(
+    flatTreeIds.value.map((id: TreeItemId) =>
+      [id, getDefaultExpanded(id)]
+    )
+  )
 }, { immediate: true })
 provide('expansions', expansions)
 

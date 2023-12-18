@@ -5,6 +5,7 @@ export type Position = 'LEFT' | 'RIGHT' | 'FIRST_CHILD' | 'LAST_CHILD'
 export type TreeItemId = string | number
 export interface TreeItem {
   id: TreeItemId
+  expanded?: boolean
   children: TreeItem[]
 }
 interface FlatTreeItem {
