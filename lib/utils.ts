@@ -1,3 +1,4 @@
+import { isProxy, isReactive, isRef, toRaw } from 'vue'
 import type { TreeItem, TreeItemId, FlatTreeItem } from './env'
 
 export const getFlatTreeWithAncestors: (nodes: TreeItem[]) => FlatTreeItem[] = (nodes: TreeItem[]) => {
@@ -17,4 +18,24 @@ export const getFlatTreeWithAncestors: (nodes: TreeItem[]) => FlatTreeItem[] = (
   return result
 }
 
-export const clamp: (value: number, min: number, max: number) => number = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
+export function deepToRaw<T extends Record<string, any>> (sourceObj: T): T {
+  const objectIterator = (input: any): any => {
+    if (Array.isArray(input)) {
+      return input.map((item) => objectIterator(item))
+    }
+    if (isRef(input) || isReactive(input) || isProxy(input)) {
+      return objectIterator(toRaw(input))
+    }
+    if (Boolean(input) && typeof input === 'object') {
+      return Object.keys(input).reduce<Record<string, any>>((acc, key) => {
+        acc[key] = objectIterator(input[key])
+        return acc
+      }, {})
+    }
+    return input
+  }
+  return objectIterator(sourceObj)
+}
+
+type ClampFunction = (value: number, min: number, max: number) => number
+export const clamp: ClampFunction = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)

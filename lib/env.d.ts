@@ -5,17 +5,14 @@ export type Position = 'LEFT' | 'RIGHT' | 'FIRST_CHILD' | 'LAST_CHILD'
 export type TreeItemId = string | number
 export interface TreeItem {
   id: TreeItemId
-  expanded?: boolean
+  expanded: boolean
   children: TreeItem[]
 }
 interface FlatTreeItem {
   id: ItemId
+  expanded: boolean
   children: TreeItem[]
   __vue_dnd_tree_ancestors: ItemId[]
-}
-
-type ExpandedNodes = {
-  [key in ItemId]: boolean
 }
 
 type DragStartEventHandler = (event: DragEvent, itemId: ItemId, depth: number) => void
@@ -46,11 +43,13 @@ export interface TreeItemProps {
   locked: boolean
 }
 export interface VueTreeDndProps {
-  tree: TreeItem[]
+  modelValue: TreeItem[]
   component: Component
   locked: boolean
 }
 
-export interface VueTreeDndEmits {
-  'move-node': [move: MoveMutation]
-}
+// Unused, but for reference:
+// export interface VueTreeDndEmits {
+//   'move-node': [move: MoveMutation]
+//   'update:modelValue': [tree: TreeItem[]]
+// }

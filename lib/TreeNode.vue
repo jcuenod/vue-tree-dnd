@@ -3,14 +3,12 @@ import {
   inject,
   computed,
   watch,
-  type ComputedRef,
-  type Ref
+  type ComputedRef
 } from 'vue'
 import type {
   DragStartEventHandler,
   DragOverEventHandler,
   DropProposalSetterHandler,
-  ExpandedNodes,
   MoveMutationProposal,
   TreeItem,
   TreeItemId,
@@ -19,29 +17,29 @@ import type {
 import { clamp } from './utils'
 
 const props = defineProps<TreeItemProps>()
-if (props.item === undefined) {
+// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+if (!props.item) {
   throw new Error('item is required')
 }
-if (props.item?.id === null) {
+if (!(typeof props.item?.id === 'string') || props.item.id === '') {
   throw new Error('item.id is required')
 }
-if (props.item?.children === null) {
-  throw new Error('item.children is required')
+if (!Array.isArray(props.item?.children)) {
+  throw new Error('item.children array is required')
 }
-if (props.component === undefined) {
+if (!('expanded' in props.item)) {
+  throw new Error('item.expanded is required')
+}
+// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+if (!props.component) {
   throw new Error('component is required')
 }
 
-const expansions = inject<Ref<ExpandedNodes>>('expansions')
-if (expansions === undefined) {
-  throw new Error('VueTreeDnd has not provided `expansions` (This is probably a VueTreeDnd bug!)')
-}
-const expanded = computed(() => expansions.value?.[props.item?.id] ?? true)
-const setExpanded: (expanded: boolean) => void = (expanded: boolean) => {
-  expansions.value = {
-    ...expansions.value,
-    [props.item?.id]: expanded
-  }
+const setExpanded = inject<(expanded: boolean, treeItemId: TreeItemId) => void>('setExpanded', () => {
+  throw new Error('setExpanded has not been provided')
+})
+const scopedSetExpanded: (expanded: boolean) => void = (expanded: boolean) => {
+  setExpanded(expanded, props.item.id)
 }
 
 const dropTarget = inject<ComputedRef<TreeItemId>>('dropTarget')
@@ -70,7 +68,7 @@ const possibleMoveMutations = computed<MoveMutationProposal[]>(() => {
   // If we have expanded children, node must be first child (no other options)
   // If we are a leaf/collapsed, node can be sibling or child (must be last if collapsed)
   // If we are the last child, node can also move up to ancestors
-  if (props.item.children.filter(node => node.id !== dragItemId).length > 0 && expanded.value) {
+  if (props.item.children.filter(node => node.id !== dragItemId).length > 0 && props.item.expanded) {
     return [{ id: dragItemId, targetId: props.item.id, position: 'FIRST_CHILD', ghostIndent: props.depth + 1 }]
   }
   const getOffsetIndent: (index: number) => number = (index: number) => props.depth - (props.ancestors.length - index)
@@ -131,8 +129,8 @@ const isBeingDraggedStyle = computed(() => dragItem?.value?.id === props.item.id
         :is="component"
         :item="item"
         :depth="depth"
-        :expanded="expanded"
-        @set-expanded="setExpanded"
+        :expanded="item.expanded"
+        @set-expanded="scopedSetExpanded"
       />
     </div>
 
@@ -157,7 +155,7 @@ const isBeingDraggedStyle = computed(() => dragItem?.value?.id === props.item.id
     <!-- TODO: replacing v-show with v-if produces inexplicable errors -->
     <TreeNode
       v-for="(node, index) in item?.children || []"
-      v-show="expanded"
+      v-show="item.expanded"
       :key="node.id"
       :item="node"
       :component="component"

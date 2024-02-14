@@ -1,24 +1,27 @@
 <script setup lang="ts">
 import {
   computed,
+  onMounted,
+  onUnmounted,
   provide,
   ref,
-  watch,
-  onMounted,
-  onUnmounted
+  watch
 } from 'vue'
-import { getFlatTreeWithAncestors } from './utils'
+import {
+  deepToRaw,
+  getFlatTreeWithAncestors
+} from './utils'
 import type {
   DragStartEventHandler,
   DragOverEventHandler,
   DragEndEventHandler,
   DropProposalSetterHandler,
-  ExpandedNodes,
   FlatTreeItem,
   MoveMutation,
   MoveMutationProposal,
   TreeItemId,
-  VueTreeDndProps
+  VueTreeDndProps,
+  TreeItem
 } from './env'
 import TreeNode from './TreeNode.vue'
 
@@ -27,33 +30,32 @@ const LEFT_OF_ROOT_ID: TreeItemId = '__vue-dnd-tree-root__'
 const props = defineProps<VueTreeDndProps>()
 const emit = defineEmits<{
   'move': [move: MoveMutation]
+  'update:modelValue': [tree: TreeItem[]]
 }>()
 
 const flatTreeNodes = ref<FlatTreeItem[]>([])
 const flatTreeIds = ref<TreeItemId[]>([])
-const expansions = ref<ExpandedNodes>({})
-const getDefaultExpanded: (id: TreeItemId) => boolean = (id: TreeItemId) => {
-  const node = flatTreeNodes.value.find(
-    (node: FlatTreeItem) => node.id === id
-  )
-  if (node !== undefined && 'expanded' in node && typeof node.expanded === 'boolean') {
-    return node.expanded
-  }
-  if (expansions.value?.[id]) {
-    return expansions.value[id]
-  }
-  return true
+const getNodeById: (id: TreeItemId) => FlatTreeItem | undefined = (id: TreeItemId) => {
+  return flatTreeNodes.value.find((node: FlatTreeItem) => node.id === id)
 }
-watch(() => props.tree, () => {
-  flatTreeNodes.value = getFlatTreeWithAncestors(props.tree)
+watch(() => props.modelValue, () => {
+  flatTreeNodes.value = getFlatTreeWithAncestors(props.modelValue)
   flatTreeIds.value = flatTreeNodes.value.map(({ id }) => id)
-  expansions.value = Object.fromEntries(
-    flatTreeIds.value.map((id: TreeItemId) =>
-      [id, getDefaultExpanded(id)]
-    )
-  )
 }, { immediate: true })
-provide('expansions', expansions)
+
+provide('setExpanded', (expanded: boolean, treeItemId: TreeItemId) => {
+  const clonedTree = structuredClone(deepToRaw(props.modelValue))
+  const traverse: (node: TreeItem) => void = (node: TreeItem) => {
+    if (node.id === treeItemId) {
+      node.expanded = expanded
+    }
+    if (node.children !== undefined) {
+      node.children.forEach(traverse)
+    }
+  }
+  clonedTree.forEach(traverse)
+  emit('update:modelValue', clonedTree)
+})
 
 const getPreviousNodeId: (nodeId: TreeItemId) => TreeItemId = (nodeId: TreeItemId) => {
   const index = flatTreeIds.value.findIndex(id => id === nodeId)
@@ -73,7 +75,7 @@ const isSomeParentCollapsed: (targetId: TreeItemId) => boolean = (targetId: Tree
   }
 
   const parentIds = targetNode.__vue_dnd_tree_ancestors
-  return parentIds.some((parentId: TreeItemId) => !expansions.value?.[parentId])
+  return parentIds.some((parentId: TreeItemId) => !((getNodeById(parentId)?.expanded) ?? false))
 }
 
 const deltaX = ref(0)
@@ -125,7 +127,7 @@ watch(dropTarget, () => {
     }
     setDropProposal({
       id: dragItemId.value,
-      targetId: props.tree[0].id,
+      targetId: props.modelValue[0].id,
       position: 'LEFT',
       ghostIndent: 0
     })
@@ -210,7 +212,7 @@ provide<DragOverEventHandler>('dragover', dragover)
       />
     </div>
     <template
-      v-for="node in tree || []"
+      v-for="node in modelValue || []"
       :key="node.id"
     >
       <TreeNode

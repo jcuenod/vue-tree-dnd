@@ -96,7 +96,7 @@ In `Your.vue` file, you can import and use the component:
 <template>
     <VueTreeDnd
         :component="MyTreeItemRenderer"
-        :tree="tree"
+        v-model="tree"
         @move="moveHandler"
     />
 </template>
@@ -142,14 +142,14 @@ Your `tree` data should conform to the following type:
 ```ts
 type TreeItem = {
     id: number | string
-    expanded?: boolean
+    expanded: boolean
     children: TreeItem[]
 }
 ```
 
 Apart from these properties, you may include any other additional data. This will be passed into the `ItemRenderer` component.
 
-**Note**: The expanded property is optional and will default to `true`. It is also not two-way bound; changes will be reflected in the dnd tree, but changes in the dnd tree will not be pushed back.
+**Note**: `expanded` is a required two-way bound property.
 
 #### Move Mutation
 
@@ -166,7 +166,7 @@ type MoveMutation = {
 | **Prop** | **Type** | **Description** |
 |--|--|--|
 | component | `Component` (Vue) | Vue component that will render the TreeItem (i.e., `ItemRenderer`). The component will receive the relevant node in the tree (with its children) as a prop. |
-| tree | `TreeItem` | The data to be displayed, conforming to the `TreeItem` type specified above. |
+| v-model | `TreeItem[]` | The data to be displayed, conforming to the `TreeItem` type specified above. |
 | locked | `boolean` | Whether the tree is locked. When `true`, nodes in the tree will not be draggable. |
 | @move | `(event: MoveMutation) => void` | Handler for move mutation. Event will fire when node is dropped in a valid location. The syntax of the `event` data is given in `MoveMutation`. |
 
@@ -177,8 +177,8 @@ type MoveMutation = {
 |--|--|--|
 | item | `TreeItem` | The node in the tree that is being rendered. |
 | depth | `number` | Depth of current node. It is `ItemRenderer`'s responsibility to manage indention. |
-| expanded | `boolean` | Whether the node is expanded (or collapsed). It is `ItemRenderer`'s responsibility to manage expand/collapse. |
-| setExpanded | `(value: boolean) => void` | Callback to control whether the node is collapsed or expanded. To toggle, call `setExpanded(!expanded)`. |
+| expanded | `boolean` | Whether the node is expanded (or collapsed). It is `ItemRenderer`'s responsibility to indicate expanded state. |
+| setExpanded | `(value: boolean) => void` | Callback to control whether the node is collapsed or expanded. It is `ItemRenderer`'s responsibility to manage `expanded`. To toggle, call `setExpanded(!expanded)`. |
 
 Your `ItemRenderer` will be draggable but may perform any other actions you wish. For example, you may want to add a button to delete the node. You can do this by adding a `delete` method to your `ItemRenderer` component and using `provide`/`inject` from the component that imports `vue-tree-dnd`.
 
