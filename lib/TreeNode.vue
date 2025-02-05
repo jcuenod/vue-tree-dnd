@@ -21,7 +21,7 @@ const props = defineProps<TreeItemProps>()
 if (!props.item) {
   throw new Error('item is required')
 }
-if (!(typeof props.item?.id === 'string') || props.item.id === '') {
+if (!(typeof props.item?.id === 'string' || typeof props.item?.id === 'number') || props.item.id === '') {
   throw new Error('item.id is required')
 }
 if (!Array.isArray(props.item?.children)) {
