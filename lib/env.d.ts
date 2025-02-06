@@ -25,13 +25,15 @@ interface MoveMutationProposal {
   position: Position
   ghostIndent: number
 }
-type DropProposalSetterHandler = (proposal: MoveMutationProposal) => void
+type DropProposalSetterHandler = (proposal: MoveMutationProposal | null) => void
 
 export interface MoveMutation {
   id: TreeItemId
   targetId: TreeItemId
   position: Position
 }
+
+export type PermitsDrop = (item: TreeItemId | undefined) => boolean
 
 export interface TreeItemProps {
   item: TreeItem
@@ -45,6 +47,7 @@ export interface TreeItemProps {
 export interface VueTreeDndProps {
   modelValue: TreeItem[]
   component: Component
+  permitsDrop?: PermitsDrop
   locked: boolean
 }
 

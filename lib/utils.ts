@@ -36,6 +36,3 @@ export function deepToRaw<T extends Record<string, any>> (sourceObj: T): T {
   }
   return objectIterator(sourceObj)
 }
-
-type ClampFunction = (value: number, min: number, max: number) => number
-export const clamp: ClampFunction = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)

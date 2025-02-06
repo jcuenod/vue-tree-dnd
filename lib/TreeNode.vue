@@ -12,9 +12,9 @@ import type {
   MoveMutationProposal,
   TreeItem,
   TreeItemId,
-  TreeItemProps
+  TreeItemProps,
+  Position
 } from './env'
-import { clamp } from './utils'
 
 const props = defineProps<TreeItemProps>()
 // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
@@ -34,6 +34,12 @@ if (!('expanded' in props.item)) {
 if (!props.component) {
   throw new Error('component is required')
 }
+
+const permitsDrop = inject<(item: TreeItemId) => boolean>('permitsDrop', () => true)
+
+const getParent = inject<(nodeId: TreeItemId) => TreeItemId | undefined>('getParent', () => {
+  throw new Error('getParent has not been provided')
+})
 
 const setExpanded = inject<(expanded: boolean, treeItemId: TreeItemId) => void>('setExpanded', () => {
   throw new Error('setExpanded has not been provided')
@@ -59,35 +65,59 @@ const dragover: DragOverEventHandler = (event: DragEvent, id: TreeItemId) => {
   injectedDragover(event, id)
 }
 
+const possibleMoveMutationsFilter: (mutation: MoveMutationProposal) => boolean = (mutation: MoveMutationProposal) => {
+  if (mutation.id === mutation.targetId) {
+    return false
+  }
+  const getActualTargetId: (m: MoveMutationProposal) => TreeItemId = (mutation: MoveMutationProposal) => {
+    switch (mutation.position) {
+      case 'LEFT':
+        return getParent(mutation.targetId)
+      case 'RIGHT':
+        return getParent(mutation.targetId)
+      case 'FIRST_CHILD':
+        return mutation.targetId
+      case 'LAST_CHILD':
+        return mutation.targetId
+    }
+    throw new Error(`Unexpected position ${mutation.position as Position}`)
+  }
+  return permitsDrop(getActualTargetId(mutation))
+}
+
 const possibleMoveMutations = computed<MoveMutationProposal[]>(() => {
   if ((dragItem?.value) == null) {
     return []
   }
   const dragItemId = dragItem.value.id
 
-  // If we have expanded children, node must be first child (no other options)
-  // If we are a leaf/collapsed, node can be sibling or child (must be last if collapsed)
-  // If we are the last child, node can also move up to ancestors
-  if (props.item.children.filter(node => node.id !== dragItemId).length > 0 && props.item.expanded) {
-    return [{ id: dragItemId, targetId: props.item.id, position: 'FIRST_CHILD', ghostIndent: props.depth + 1 }]
+  const possibleMoveMutationsList: () => MoveMutationProposal[] = () => {
+    // If we have expanded children, node must be first child (no other options)
+    // If we are a leaf/collapsed, node can be sibling or child (must be last if collapsed)
+    // If we are the last child, node can also move up to ancestors
+    // (ancestors is only set on the last child [with asterisks to account for the dragged node])
+    if (props.item.children.filter(node => node.id !== dragItemId).length > 0 && props.item.expanded) {
+      return [{ id: dragItemId, targetId: props.item.id, position: 'FIRST_CHILD' as Position, ghostIndent: props.depth + 1 }]
+    }
+    const getOffsetIndent: (index: number) => number = (index: number) => props.depth - (props.ancestors.length - index)
+    return [
+      ...props.ancestors.map<MoveMutationProposal>((targetId, index) => ({
+        id: dragItemId, targetId, position: 'RIGHT' as Position, ghostIndent: getOffsetIndent(index)
+      })),
+      { id: dragItemId, targetId: props.item.id, position: 'RIGHT' as Position, ghostIndent: props.depth },
+      { id: dragItemId, targetId: props.item.id, position: 'LAST_CHILD' as Position, ghostIndent: props.depth + 1 }
+    ]
   }
-  const getOffsetIndent: (index: number) => number = (index: number) => props.depth - (props.ancestors.length - index)
-  return [
-    ...props.ancestors.map<MoveMutationProposal>((targetId, index) => ({
-      id: dragItemId, targetId, position: 'RIGHT', ghostIndent: getOffsetIndent(index)
-    })),
-    { id: dragItemId, targetId: props.item.id, position: 'RIGHT', ghostIndent: props.depth },
-    { id: dragItemId, targetId: props.item.id, position: 'LAST_CHILD', ghostIndent: props.depth + 1 }
-  ]
+  return possibleMoveMutationsList().filter(possibleMoveMutationsFilter)
 })
 const ghostIndent = computed(() => {
-  const minOffset = Math.min(...possibleMoveMutations.value.map(m => m.ghostIndent))
-  const maxOffset = Math.max(...possibleMoveMutations.value.map(m => m.ghostIndent))
-  return clamp(props.deltaX, minOffset, maxOffset)
+  const sortedMutationsByDistanceFromDeltaX = possibleMoveMutations.value.slice(0)
+    .sort((a, b) => Math.abs(props.deltaX - a.ghostIndent) - Math.abs(props.deltaX - b.ghostIndent))
+  return sortedMutationsByDistanceFromDeltaX?.[0]?.ghostIndent ?? null
 })
 
 const injectedSetDropProposal = inject<DropProposalSetterHandler>('setDropProposal')
-const setDropProposal: DropProposalSetterHandler = (proposal: MoveMutationProposal) => {
+const setDropProposal: DropProposalSetterHandler = (proposal) => {
   if (injectedSetDropProposal === undefined) {
     throw new Error('VueTreeDnd has not been provided')
   }
@@ -98,11 +128,8 @@ watch([dropTarget, possibleMoveMutations, ghostIndent], () => {
     return
   }
   if (dropTarget.value === props.item.id) {
-    const impliedMoveMutation = possibleMoveMutations.value.find(m => m.ghostIndent === ghostIndent.value)
-    if (impliedMoveMutation == null) {
-      throw new Error(`Could not find impliedMoveMutation for ghostIndent ${ghostIndent.value}`)
-    }
-    setDropProposal(impliedMoveMutation)
+    const impliedMoveMutation = possibleMoveMutations.value.sort((a, b) => Math.abs(a.ghostIndent - ghostIndent.value) - Math.abs(b.ghostIndent - ghostIndent.value))?.[0]
+    setDropProposal(impliedMoveMutation ?? null)
   }
 })
 
@@ -136,7 +163,7 @@ const isBeingDraggedStyle = computed(() => dragItem?.value?.id === props.item.id
 
     <!-- Display ghost (if this TreeNode is not the ghost) -->
     <div
-      v-if="dropTarget === item.id && !isGhost && dragItem !== undefined"
+      v-if="dropTarget === item.id && !isGhost && dragItem !== undefined && ghostIndent !== null"
       style="display: flex; flex-direction: row; align-items: center; opacity: 0.3; pointer-events: none;"
     >
       <TreeNode
