@@ -6,10 +6,11 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
+<!-- [![Forks][forks-shield]][forks-url] -->
 [![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
+[![NPM Version][npm-version-shield]][npm-url]
 [![MIT License][license-shield]][license-url]
 <!-- [![LinkedIn][linkedin-shield]][linkedin-url] -->
 
@@ -262,6 +263,8 @@ Distributed under the MIT License. See `LICENSE.md` for more information.
 [forks-url]: https://github.com/jcuenod/vue-tree-dnd/network/members
 [stars-shield]: https://img.shields.io/github/stars/jcuenod/vue-tree-dnd.svg?style=for-the-badge
 [stars-url]: https://github.com/jcuenod/vue-tree-dnd/stargazers
+[npm-version-shield]: https://img.shields.io/npm/v/vue-tree-dnd.svg?style=for-the-badge
+[npm-url]: https://www.npmjs.com/package/vue-tree-dnd
 [issues-shield]: https://img.shields.io/github/issues/jcuenod/vue-tree-dnd.svg?style=for-the-badge
 [issues-url]: https://github.com/jcuenod/vue-tree-dnd/issues
 [license-shield]: https://img.shields.io/github/license/jcuenod/vue-tree-dnd.svg?style=for-the-badge
