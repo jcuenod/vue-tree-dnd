@@ -115,7 +115,7 @@ const tree = ref([
         children: [
             {
                 id: 2,
-                name: 'Item 2', 
+                name: 'Item 2',
                 expanded: true,
                 children: [
                     {
