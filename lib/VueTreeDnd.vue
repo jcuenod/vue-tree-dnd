@@ -35,12 +35,15 @@ const emit = defineEmits<{
 
 const flatTreeNodes = ref<FlatTreeItem[]>([])
 const flatTreeIds = ref<TreeItemId[]>([])
+const refreshFlatTree = () => {
+  flatTreeNodes.value = getFlatTreeWithAncestors(props.modelValue)
+  flatTreeIds.value = flatTreeNodes.value.map(({ id }) => id)
+}
 const getNodeById: (id: TreeItemId) => FlatTreeItem | undefined = (id: TreeItemId) => {
   return flatTreeNodes.value.find((node: FlatTreeItem) => node.id === id)
 }
 watch(() => props.modelValue, () => {
-  flatTreeNodes.value = getFlatTreeWithAncestors(props.modelValue)
-  flatTreeIds.value = flatTreeNodes.value.map(({ id }) => id)
+  refreshFlatTree()
 }, { immediate: true })
 
 provide('setExpanded', (expanded: boolean, treeItemId: TreeItemId) => {
@@ -187,6 +190,8 @@ const dragover: DragOverEventHandler = (event: DragEvent, itemId: TreeItemId) =>
     : itemId)
 }
 provide<DragOverEventHandler>('dragover', dragover)
+
+defineExpose({ refreshFlatTree })
 </script>
 
 <template>
