@@ -33,15 +33,15 @@ const emit = defineEmits<{
   'update:modelValue': [tree: TreeItem[]]
 }>()
 
-const flatTreeNodes = ref<FlatTreeItem[]>([])
-const flatTreeIds = ref<TreeItemId[]>([])
 const getNodeById: (id: TreeItemId) => FlatTreeItem | undefined = (id: TreeItemId) => {
   return flatTreeNodes.value.find((node: FlatTreeItem) => node.id === id)
 }
-watch(() => props.modelValue, () => {
-  flatTreeNodes.value = getFlatTreeWithAncestors(props.modelValue)
-  flatTreeIds.value = flatTreeNodes.value.map(({ id }) => id)
-}, { immediate: true })
+const flatTreeNodes = computed(() =>
+  Array.isArray(props.modelValue) && props.modelValue.length > 0
+    ? getFlatTreeWithAncestors(props.modelValue)
+    : []
+)
+const flatTreeIds = computed<TreeItemId[]>(() => flatTreeNodes.value.map((node: TreeItem) => node.id))
 
 provide('setExpanded', (expanded: boolean, treeItemId: TreeItemId) => {
   const clonedTree = structuredClone(deepToRaw(props.modelValue))
