@@ -41,7 +41,7 @@ const getNodeById: (id: TreeItemId) => FlatTreeItem | undefined = (id: TreeItemI
 watch(() => props.modelValue, () => {
   flatTreeNodes.value = getFlatTreeWithAncestors(props.modelValue)
   flatTreeIds.value = flatTreeNodes.value.map(({ id }) => id)
-}, { immediate: true })
+}, { immediate: true, deep: true })
 
 provide('setExpanded', (expanded: boolean, treeItemId: TreeItemId) => {
   const clonedTree = structuredClone(deepToRaw(props.modelValue))
