@@ -43,6 +43,15 @@ watch(() => props.modelValue, () => {
   flatTreeIds.value = flatTreeNodes.value.map(({ id }) => id)
 }, { immediate: true, deep: true })
 
+provide('permitsDrop', props.permitsDrop ?? (() => true))
+provide('getParent', (nodeId: TreeItemId) => {
+  const node = getNodeById(nodeId)
+  if (node === undefined) {
+    return undefined
+  }
+  return node.__vue_dnd_tree_ancestors?.[node.__vue_dnd_tree_ancestors.length - 1]
+})
+
 provide('setExpanded', (expanded: boolean, treeItemId: TreeItemId) => {
   const clonedTree = structuredClone(deepToRaw(props.modelValue))
   const traverse: (node: TreeItem) => void = (node: TreeItem) => {
@@ -112,10 +121,9 @@ const setDropTarget: (targetId: TreeItemId) => void = (targetId: TreeItemId) => 
   dropTarget.value = targetId
 }
 provide('dropTarget', dropTarget)
-provide('setDropTarget', setDropTarget)
 
 const dropProposal = ref<MoveMutationProposal | null>(null)
-const setDropProposal: DropProposalSetterHandler = (proposal: MoveMutationProposal) => {
+const setDropProposal: DropProposalSetterHandler = (proposal) => {
   dropProposal.value = proposal
 }
 provide('setDropProposal', setDropProposal)
@@ -124,6 +132,9 @@ watch(dropTarget, () => {
   if (dropTarget.value === LEFT_OF_ROOT_ID) {
     if (dragItemId.value === null) {
       throw new Error('dragItemId.value is null')
+    }
+    if (props.permitsDrop !== undefined && !props.permitsDrop(undefined)) {
+      return
     }
     setDropProposal({
       id: dragItemId.value,
@@ -137,11 +148,12 @@ watch(dropTarget, () => {
 // --------------------------------- DRAG EVENTS ---------------------------------
 
 const dragend: DragEndEventHandler = () => {
+  dropTarget.value = null
+  dragItemId.value = null
+
   if (dropProposal.value == null) {
     return
   }
-  dropTarget.value = null
-  dragItemId.value = null
 
   const { ghostIndent, ...proposal } = dropProposal.value
 
