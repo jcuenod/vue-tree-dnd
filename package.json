@@ -32,22 +32,21 @@
   },
   "main": "./dist/vue-tree-dnd.umd.cjs",
   "module": "./dist/vue-tree-dnd.js",
-  "types": "./lib/env.d.ts",
+  "types": "./dist/main.d.ts",
   "exports": {
     ".": {
       "require": {
-        "types": "./lib/env.d.ts",
+        "types": "./dist/main.d.ts",
         "default": "./dist/vue-tree-dnd.umd.cjs"
       },
       "import": {
-        "types": "./lib/env.d.ts",
+        "types": "./dist/main.d.ts",
         "default": "./dist/vue-tree-dnd.js"
       }
     }
   },
   "files": [
-    "dist",
-    "lib/**/*.d.ts"
+    "dist"
   ],
   "peerDependencies": {
     "vue": "^3.3.4"

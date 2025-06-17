@@ -15,12 +15,13 @@
     "isolatedModules": false,
     "allowJs": true,
     "checkJs": true,
-    "outDir": "dist/types",
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "declaration": true,
+    "declarationDir": "./dist"
   },
   "include": [
     "lib/**/*.ts",
