@@ -153,6 +153,8 @@ const dragend: DragEndEventHandler = () => {
 }
 
 const dragImage = new Image()
+dragImage.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII='
+
 type DragEventData = {
   initialX: number
   initialDepth: number
